@@ -54,22 +54,28 @@ public class EvolutionaryAlgo {
         Solution une_solution = new Solution(data);
         Mining mining = new Mining(data);
         Solution solution_locale = new Solution(data);
+        Solution solution2 = new Solution(data);
+        Solution solution_temp1 = new Solution(data);
+        Solution solution_temp2 = new Solution(data);
         MersenneTwisterFast r = new MersenneTwisterFast(seed);
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
         TreeMap<Long, Solution> listSol = new TreeMap<Long, Solution>();
         ArrayList<Solution> listSol2 = new ArrayList<>();
         ArrayList<Solution> listSol3 = new ArrayList<>();
-        int puissanceDix = 1000;
+        //int puissanceDix = 1000;
 
         System.out.println("WithDM : " + withDM);
+        System.out.println("SolOpti : " + solOptiConnue);
         boolean optiTrouve = false;
+
+        int RLiter = (int) (Math.log(2.0) * data.getSize() * (data.getSize() - 1));
         for (int j = 0; j < sizePop; j++) {
             Solution newSol = new Solution(data);
             newSol.generer_rand_bierwirth(data, r);
             //LocalSearch.recherche_locale_Stoch_2(newSol, solution_locale, savS, data, r, 10000);//data.getNbIterLS()
 
-            LocalSearch.recherche_locale_naive2(newSol, solution_locale, data, r,
-					(int) (Math.log(2.0) * data.getSize() * (data.getSize() - 1)));//data.getNbIterLS()
+            LocalSearch.recherche_locale_naive2(newSol, solution_locale, data, r, RLiter
+					);//data.getNbIterLS()
             listSol.put(newSol.getMakespan() * 300 * data.puissMax + j, newSol);
             listSol2.add(newSol);
             if (!bestSol.getIsUsed() || newSol.getMakespan() < bestSol.getMakespan()) {
@@ -89,47 +95,85 @@ public class EvolutionaryAlgo {
             System.out.println("Nb Patterns : " + mining.getNbPattern());
         }
 
-        System.out.println("Valeur initale bestSol : " + bestSol.getMakespan());
-        int cpt = 0;
+        System.out.println(bestSol.getMakespan() + "; Gen : 0; Gen Stable : 0\n");
+        int cpt = 1;
         int cptGenStable = 0;
+        int[] tab = new int[data.getNbjob()];
+        int[] tab2 = new int[data.getNbjob()];
         outerloop:
         while (cpt < nbGen && cptGenStable < nbGenStable && !optiTrouve) {
-            for (int i = 0; i < 2 * sizePop; i++) {//génération de 600 nouveaux individus
-                int a = i - ((i / sizePop) * sizePop);
+            for (int i = 0; i < sizePop; i++) {//génération de nouveaux individus
+                double w = r.nextDouble();
                 double x = r.nextDouble();
                 double y = r.nextDouble();
                 double z = r.nextDouble();
-                une_solution.Copie(listSol2.get(a), data);
-                if (x < pc) {//crossover appliqué avec une proba pc
-                    int d = r.nextInt(sizePop);
-                    while (d == a) {
-                        d = r.nextInt(sizePop);
-                    }
-                    Solution solution2 = listSol2.get(d);
+                une_solution.Copie(listSol2.get(i), data);
+                int b = r.nextInt(sizePop);
+                while (b == i) {
+                    b = r.nextInt(sizePop);
+                }
+                solution2.Copie(listSol2.get(b), data) ;
+                if (w < pc) {//crossover appliqué avec une proba pc
+
                     int e = r.nextInt(data.getSize());
-                    int[] tab = new int[data.getNbjob()];
 
                     for (int k = 0; k <= e; k++) {
                         tab[une_solution.getVecteur(k)]++;
+                        tab2[solution2.getVecteur(k)]++;
                     }
-                    int pos = e;
-                    for (int k = e + 1; k < data.getSize(); k++) {
-                        pos = ((pos + 1) - ((pos + 1) / data.getSize()) * data.getSize());
-                        while (tab[solution2.getVecteur(pos)] == data.getNbmac()) {
-                            pos = ((pos + 1) - ((pos + 1) / data.getSize()) * data.getSize());
-                        }
 
-                        une_solution.setVecteur(k, solution2.getVecteur(pos));
-                        tab[solution2.getVecteur(pos)]++;
+                    solution_temp1.Copie(une_solution, data);
+                    solution_temp2.Copie(solution2, data);
+                    //int pos = e;
+                    int pos1 = 0;
+                    int pos2 = 0;
+                    int p1 = e + 1;
+                    int p2 = e + 1;
+                     while (p1 < data.getSize() &&  pos1<data.getSize() ) {
+                        /*pos = ((pos + 1) - ((pos + 1) / data.getSize()) * data.getSize());
+                        while  (tab[solution2.getVecteur(pos)]== data.getNbmac()) {
+                            pos = ((pos + 1) - ((pos + 1) / data.getSize()) * data.getSize());
+                        }*/
+                        if (tab[solution_temp2.getVecteur(pos1)]< data.getNbmac()) {
+                            une_solution.setVecteur(p1, solution_temp2.getVecteur(pos1));
+                            tab[solution_temp2.getVecteur(pos1)]++;
+                            p1++;
+                            pos1++;
+                        }
+                        else pos1++;
+
                     }
-                    une_solution.checkVecteur(data);
+                    while (p2 < data.getSize() &&  pos2<data.getSize() ) {
+
+                        if (tab2[solution_temp1.getVecteur(pos2)]< data.getNbmac()) {
+                            solution2.setVecteur(p2, solution_temp1.getVecteur(pos2));
+                            tab2[solution_temp1.getVecteur(pos2)]++;
+                            p2++;
+                            pos2++;
+                        }
+                        else pos2++;
+
+                    }
+                    //une_solution.checkVecteur(data);
+                    //solution2.checkVecteur(data);
                     une_solution.evaluate(data, e);
+                    solution2.evaluate(data, e);
+                    for (int j=0; j < data.getNbjob(); ++j) {
+                        tab[j] = 0;
+                        tab2[j] = 0;
+                    }
                 }
-                if (y < pm) { //mutation appliquée avec une proba pm
-                    int b = r.nextInt(data.getSize());
+                if (x < pm) { //mutation appliquée avec une proba pm
                     int c = r.nextInt(data.getSize());
-                    Neighbourhood.echanger(une_solution, b, c);
-                    une_solution.evaluate(data, min(b, c));
+                    int d = r.nextInt(data.getSize());
+                    Neighbourhood.echanger(une_solution, c, d);
+                    une_solution.evaluate(data, (c<d?c:d));
+                }
+                if (y < pm) {
+                    int e = r.nextInt(data.getSize());
+                    int f = r.nextInt(data.getSize());
+                    Neighbourhood.echanger(une_solution, e, f);
+                    solution2.evaluate(data, (e<f?e:f));
                 }
                 if (z < pls) {
 					/*if (withDM) {
@@ -140,13 +184,24 @@ public class EvolutionaryAlgo {
 						*data.getSize()*(data.getSize()-1));
 					}*/
                     LocalSearch.recherche_locale_naive_DM2(une_solution, solution_locale, data, r,
-							(int) (Math.log(2.0) * data.getSize() * (data.getSize() - 1)), mining, withDM, 100);
+							RLiter, mining, withDM, 100);
+
+                    LocalSearch.recherche_locale_naive_DM2(solution2, solution_locale, data, r,
+							RLiter, mining, withDM, 100);
                 }
                 Solution solCopie = new Solution(data);
                 solCopie.Copie(une_solution, data);
+                Solution solCopie2 = new Solution(data);
+                solCopie2.Copie(solution2, data);
                 listSol3.add(solCopie);
+                listSol3.add(solCopie2);
                 if (solCopie.getMakespan() ==solOptiConnue) {
                     bestSol.Copie(solCopie, data);
+                    cpt++;
+                    break outerloop;
+                }
+                if (solCopie2.getMakespan() ==solOptiConnue) {
+                    bestSol.Copie(solCopie2, data);
                     cpt++;
                     break outerloop;
                 }

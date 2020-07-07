@@ -114,9 +114,9 @@ public class Main {
                         System.out.println("_______________Instance : " + pNames[inst]);// + " totpop.size : "+totPop
 						// .listSol.size());
                         String toOut = pNames[inst];
-                        for (int replic = 0; replic < 10; ++replic) {
+                        for (int replic = 0; replic <10; ++replic) {
                             System.out.println("Replication : " + replic);
-                            returnedSol = EvolutionaryAlgo.MemeticAlgo(data, log, Boolean.parseBoolean(args[0]), false, 0.7, 1.0, 1, 300, 1000
+                            returnedSol = EvolutionaryAlgo.MemeticAlgo(data, log, false, false, 0.7, 1.0, 1, 300, 100
 									, 0, 0, 0, replic, 50, solOptiConnue[inst]);
 
                             out_res.stock_Res(data, returnedSol, inst, replic);
