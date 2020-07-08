@@ -224,7 +224,7 @@ public class LocalSearch {
 				solution_locale.Copie(une_solution, data); // on sauvegarde la solution connue
 				// on inverse les données dans la solution locale
 				Neighbourhood.echanger(solution_locale, first, second);
-				solution_locale.evaluate(data, 0);
+				solution_locale.evaluate(data, (first<second?first:second));
 				// evaluate(solution_locale, data, 0, false);
 
 				// si le cout de la solution locale est meilleur que celui de la solution connue

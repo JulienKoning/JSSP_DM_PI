@@ -103,7 +103,7 @@ public class Main {
                     long[] solOptiConnue = new long[]{666, 655, 597, 590, 593, 926, 890, 863, 951, 958, 1222, 1039,
                             1150, 1292, 1207, 945, 784, 848, 842, 902, 1046, 927, 1032, 935, 977, 1218, 1235, 1216,
                             1152, 1355, 1784, 1850, 1719, 1721, 1888, 1268, 1397, 1196, 1233, 1222};
-                    for (int inst = 0; inst <= 39; ++inst) {
+                    for (int inst = 26; inst <= 26; ++inst) {
 
                         Data data = new Data(pNames[inst], ".txt", log);// la06_0_0,5
                         Solution returnedSol = new Solution(data);
@@ -116,7 +116,7 @@ public class Main {
                         String toOut = pNames[inst];
                         for (int replic = 0; replic <10; ++replic) {
                             System.out.println("Replication : " + replic);
-                            returnedSol = EvolutionaryAlgo.MemeticAlgo(data, log, false, false, 0.7, 1.0, 1, 300, 100
+                            returnedSol = EvolutionaryAlgo.MemeticAlgo(data, log, true, false, 0.7, 1.0, 1, 300, 100
 									, 0, 0, 0, replic, 50, solOptiConnue[inst]);
 
                             out_res.stock_Res(data, returnedSol, inst, replic);

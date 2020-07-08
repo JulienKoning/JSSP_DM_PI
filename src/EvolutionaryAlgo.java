@@ -172,7 +172,7 @@ public class EvolutionaryAlgo {
                 if (y < pm) {
                     int e = r.nextInt(data.getSize());
                     int f = r.nextInt(data.getSize());
-                    Neighbourhood.echanger(une_solution, e, f);
+                    Neighbourhood.echanger(solution2, e, f);
                     solution2.evaluate(data, (e<f?e:f));
                 }
                 if (z < pls) {
@@ -185,7 +185,6 @@ public class EvolutionaryAlgo {
 					}*/
                     LocalSearch.recherche_locale_naive_DM2(une_solution, solution_locale, data, r,
 							RLiter, mining, withDM, 100);
-
                     LocalSearch.recherche_locale_naive_DM2(solution2, solution_locale, data, r,
 							RLiter, mining, withDM, 100);
                 }
