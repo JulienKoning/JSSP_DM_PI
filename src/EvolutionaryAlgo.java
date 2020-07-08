@@ -107,9 +107,11 @@ public class EvolutionaryAlgo {
                 double x = r.nextDouble();
                 double y = r.nextDouble();
                 double z = r.nextDouble();
-                une_solution.Copie(listSol2.get(i), data);
+                int rangParentFav = sizePop/10;
+                int a = r.nextInt(rangParentFav);
+                une_solution.Copie(listSol2.get(a), data);
                 int b = r.nextInt(sizePop);
-                while (b == i) {
+                while (b == a) {
                     b = r.nextInt(sizePop);
                 }
                 solution2.Copie(listSol2.get(b), data) ;
@@ -207,9 +209,9 @@ public class EvolutionaryAlgo {
 
             }
             Collections.sort(listSol3);
-            ArrayList<Solution> best300Sol = new ArrayList<Solution>(listSol3.subList(0, sizePop));
+            //ArrayList<Solution> best300Sol = new ArrayList<Solution>(listSol3.subList(0, sizePop));
             listSol2.clear();
-            listSol2.addAll(best300Sol);
+            listSol2.addAll(listSol3.subList(0, sizePop));
             listSol3.clear();
             if (listSol2.get(0).getMakespan() < bestSol.getMakespan()) {
                 bestSol.Copie(listSol2.get(0), data);
