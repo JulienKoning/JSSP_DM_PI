@@ -43,7 +43,7 @@ public class EvolutionaryAlgo {
      */
     public static Solution MemeticAlgo(Data data, Logger log, Boolean withDM, Boolean typeElection, double pc,
                                        double pm, double pls, int sizePop, int nbGen, int els1, int els2, int els3,
-                                       int seed, int nbGenStable, long solOptiConnue) {
+                                       int seed, int nbGenStable, long solOptiConnue, int RLiter) {
         // ------------------------------------------
         // dispatch parameters
         // ------------------------------------------
@@ -68,13 +68,13 @@ public class EvolutionaryAlgo {
         System.out.println("SolOpti : " + solOptiConnue);
         boolean optiTrouve = false;
 
-        int RLiter = (int) (Math.log(2.0) * data.getSize() * (data.getSize() - 1));
+        int RLiter1 = (int) (Math.log(2.0) * data.getSize() * (data.getSize() - 1));
         for (int j = 0; j < sizePop; j++) {
             Solution newSol = new Solution(data);
             newSol.generer_rand_bierwirth(data, r);
             //LocalSearch.recherche_locale_Stoch_2(newSol, solution_locale, savS, data, r, 10000);//data.getNbIterLS()
 
-            LocalSearch.recherche_locale_naive2(newSol, solution_locale, data, r, RLiter
+            LocalSearch.recherche_locale_naive2(newSol, solution_locale, data, r, RLiter1
             );//data.getNbIterLS()
             listSol.put(newSol.getMakespan() * 300 * data.puissMax + j, newSol);
             listSol2.add(newSol);
@@ -209,13 +209,13 @@ public class EvolutionaryAlgo {
             }
             Collections.sort(listSol3);
             //ArrayList<Solution> best300Sol = new ArrayList<Solution>(listSol3.subList(0, sizePop));
-            listSol2 = new ArrayList<Solution>(listSol2.subList(0, 30));
-            listSol2.addAll(listSol3.subList(0, sizePop - 30));
+            listSol2.clear();
+            listSol2.addAll(listSol3.subList(0, sizePop));
             listSol3.clear();
-            Collections.sort(listSol2);
             if (listSol2.get(0).getMakespan() < bestSol.getMakespan()) {
                 bestSol.Copie(listSol2.get(0), data);
-                System.out.println(bestSol.getMakespan() + "; Gen : " + cpt + "; Gen Stable : " + cptGenStable + "\n");
+                bestSol.setTotalTime(System.nanoTime());
+                System.out.println(bestSol.getMakespan() + "_" + bestSol.getTotalTime() + "; Gen : " + cpt + "; Gen Stable : " + cptGenStable + "\n");
                 cptGenStable = 0;
             } else cptGenStable++;
 
